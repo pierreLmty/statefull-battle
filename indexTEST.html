@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html ng-app="highscore">
+<head>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.14/angular.min.js"></script>
+    <script src="script.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body ng-controller="HsController">
+  <h1>Hello tests</h1>
+  <div ng-repeat="x in scores">
+    <p>{{x.name}} and  {{x.score}}</p>
+  </div>
+  <input type="button" value="yolo" ng-click="insertion()" />
+</body>
+
+</html>
+
+<script>
+  var init = function() {
+    console.log("init called");
+    window.init();
+  };
+</script>
+
+<script src="https://apis.google.com/js/client.js?onload=init"></script>
