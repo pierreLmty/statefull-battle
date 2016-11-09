@@ -7,21 +7,28 @@
 		<link href="bootstrap/css/bootstrap.min.css" rel="stylesheet" />
 <!-- 		<script src="https://code.angularjs.org/1.5.8/angular.js" data-require="angular.js@1.5.x" data-semver="1.5.8"></script> -->
 		<script src="angular.min.js" data-require="angular.js@1.5.x" data-semver="1.5.8"></script>
-		<script src="angular-google-gapi/dist/angular-google-gapi.min.js"></script>
+<!-- 		<script src="angular-google-gapi/dist/angular-google-gapi.min.js"></script> -->
 		<script src="app.js"></script>
+		<script>
+		var init = function() {
+			console.log("init called");
+			window.init();
+		};
+		</script>
+		<script src="https://apis.google.com/js/client.js?onload=init"></script>
 	</head>
 	
 	<body ng-controller="AppController">
 		<nav class="navbar navbar-inverse">
 			<div class="container">
 				<div class="navbar-header">
-					<a class="navbar-brand" href="#">Statefull Battle</a>
+					<span style="cursor:default" class="navbar-brand">Statefull Battle</span>
 				</div>
 				<div class="navbar-collapse collapse">
 					<ul class="nav navbar-nav">
-						<li><a href="#">Jouer</a></li>
-						<li><a href="#">High scores</a></li>
-						<li><a href="https://github.com/pierreLmty/statefull-battle" target="_blank">GitHub</a></li>
+						<li style="cursor:pointer"><a ng-click="selectPage('jouer')">Jouer</a></li>
+						<li style="cursor:pointer"><a ng-click="selectPage('highscores')">High scores</a></li>
+						<li style="cursor:pointer"><a href="https://github.com/pierreLmty/statefull-battle" target="_blank">GitHub</a></li>
 					</ul>
 					<div class="navbar-right">
 						<a class="btn btn-default navbar-btn" ng-click="doSignup()"><span class="glyphicon glyphicon-lock"></span> Se connecter</a>
@@ -60,15 +67,15 @@
 					<div class="col-md-6 col-md-offset-3">
 						<div class="panel panel-primary">
 							<div class="panel-heading">
-									 <h3>Question n° :</h3>
+									 <h3>Question n° : </h3>
 							</div>
 							<div class="panel-body row">
 									<p>Réponses possibles de la question</p>
 							</div>
 						</div>
-						<div class="progress">
+<!-- 						<div class="progress"> -->
 <!-- 								Progression des questions -->
-						</div>
+<!-- 						</div> -->
 					</div>
 					
 					<div class="col-md-2">
