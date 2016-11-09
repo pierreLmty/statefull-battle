@@ -61,6 +61,7 @@ battlemind.controller('AppController', ['$scope', '$window', function($scope, $w
 			answered: 0,
 			well_answered: 0,
 			life: 3,
+			nolife: 0,
 			name: null
 		}
 
@@ -69,6 +70,18 @@ battlemind.controller('AppController', ['$scope', '$window', function($scope, $w
 	
 	$scope.nextQuestion = function(){
 		//Code de sélection de la question et de ses réponses
+	}
+	
+	//Gestion de la vie
+	$scope.getLife = function(count){
+
+		  var ratings = []; 
+
+		  for (var i = 0; i < count; i++) { 
+			ratings.push(i) 
+		  } 
+
+		  return ratings;
 	}
 	
 	$scope.selectPage('jouer');
