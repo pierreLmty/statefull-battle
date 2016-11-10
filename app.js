@@ -4,6 +4,7 @@ battlemind.controller('AppController', ['$scope', '$window', function($scope, $w
 
 	$scope.page = null;
 	$scope.highscores = null;
+	$scope.UserName = "Visiteur";
 	
 	var rootApi = 'https://1-dot-statefull-battle.appspot.com/_ah/api/';
 	
@@ -82,6 +83,36 @@ battlemind.controller('AppController', ['$scope', '$window', function($scope, $w
 		  } 
 
 		  return ratings;
+	}
+	
+	//Gestion de la connexion au compte Google
+	$scope.signUp = function(googleUser){
+		console.log("Auth Google");
+		var profile = googleUser.getBasicProfile();
+		console.log('ID: ' + profile.getId());
+		console.log('Name: ' + profile.getName());
+		console.log('Email: ' + profile.getEmail());
+	}
+	
+	//Gestion de la déconnexion du compte Google
+	$scope.signOut = function(){
+		
+	}
+	
+	$scope.majConnexion = function (name){	 
+		console.log("Methode : majConnexion");
+		$scope.connecte = !$scope.connecte;
+		if($scope.connecte){
+			$scope.accueil = false;
+		}
+		else {
+			$scope.accueil = true;
+			$scope.affichageVote = true;
+			$scope.affichageFin = true;
+			$scope.partieVote = true;			
+			$scope.affichageResultat = true;
+		}
+		$scope.UserName = name;
 	}
 	
 	$scope.selectPage('jouer');
