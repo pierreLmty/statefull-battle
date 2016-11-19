@@ -5,18 +5,14 @@
 		<meta charset="utf-8" />
 		<title>Statefull Battle</title>
 		<link href="bootstrap/css/bootstrap.min.css" rel="stylesheet" />
-<!-- 		<script src="https://code.angularjs.org/1.5.8/angular.js" data-require="angular.js@1.5.x" data-semver="1.5.8"></script> -->
 		<script src="angular.min.js" data-require="angular.js@1.5.x" data-semver="1.5.8"></script>
-<!-- 		<script src="angular-google-gapi/dist/angular-google-gapi.min.js"></script> -->
+		<script src="angular-google-gapi/dist/angular-google-gapi.min.js"></script>
+		<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.8/angular-route.js"></script>
+		<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.8/angular-cookies.js"></script>
 		<script src="app.js"></script>
-		<script>
-		var init = function() {
-			console.log("init called");
-			window.init();
-		};
-		</script>
-		<script src="https://apis.google.com/js/client.js?onload=init"></script>
 		<meta name="google-signin-client_id" content="318394981972-1lf9m33h1fc6hasa945ljetqnun0tfu2.apps.googleusercontent.com"> 
+		<script src="https://apis.google.com/js/platform.js" async defer></script>
+
 	</head>
 	
 	<body ng-controller="AppController">
@@ -33,6 +29,8 @@
 					</ul>
 					<div class="navbar-right">
 						<a class="btn btn-default navbar-btn" ng-click="signUp()"><span class="glyphicon glyphicon-lock"></span> Se connecter</a>
+						<div class="g-signin2" data-onsuccess="onSignIn"></div>
+
 					</div>
 				</div>
 				

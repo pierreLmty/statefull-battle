@@ -1,33 +1,92 @@
-var battlemind = angular.module('battlemind', []);
+var battleMind = angular.module('battlemind', ['angular-google-gapi', 'ngCookies', 'ngRoute']);
 
-battlemind.controller('AppController', ['$scope', '$window', function($scope, $window) {
+//Avec authentification Google
+//code source : https://github.com/maximepvrt/angular-google-gapi
+battleMind.run(['GAuth', 'GApi', 'GData', '$cookies', '$rootScope',
+	function(GAuth, GApi, GData, $cookies, $rootScope) 
+	{
+		var CLIENT = '318394981972-1lf9m33h1fc6hasa945ljetqnun0tfu2.apps.googleusercontent.com';
+		var BASE = 'https://1-dot-statefull-battle.appspot.com/_ah/api';
+
+		GApi.load('questionentityendpoint','v1',BASE).then(function(resp)
+			{
+				//Log de console, bonne liaison avec l'api
+				console.log('api: ' + resp.api + ', version: ' + resp.version + ' loaded');
+			}, 
+			function(resp)
+			{
+				//Log de console, mauvaise liaison avec l'api
+				console.log('an error occured during loading api: ' + resp.api + ', resp.version: ' + version);
+			});
+		
+		GAuth.setClient(CLIENT)
+
+		GAuth.setScope('https://www.googleapis.com/auth/userinfo.profile');
+		GAuth.load();
+		
+		GData.setUserId($cookies.get('userId'));
+		
+// 		User object :
+// 		user.email
+// 		user.picture (url)
+// 		user.id (Google id)
+// 		user.name (Google account name or email if don't exist)
+// 		user.link (link to Google+ page)
+		
+// 		Connexion au compte Google
+		$rootScope.signUp = function()
+			{
+				GAuth.login().then(function(user) 
+					{
+						console.log(user.name + ' is logged in');
+						$rootScope.currentUser = user;
+						$cookies.put('userId', user.id);
+					}, 
+					function() 
+					{
+						console.log('Erreur de connexion');
+					});
+			};
+			
+		 $rootScope.logout = function() 
+			{
+				GAuth.logout().then(function () 
+					{
+						$rootScope.currentUser = null;
+						$cookies.remove('userId');
+					});
+			};
+				
+		//Check de la connexion au compte
+		GAuth.checkAuth().then(
+			function (user)
+			{
+				console.log(user.name + ' is already logged in');
+			},
+			function() {
+				console.log('Erreur de check connexion');
+			}
+		);
+	}
+	
+//Routing : http://www.w3schools.com/angular/angular_routing.asp
+]);
+
+
+battleMind.controller('AppController', ['$scope', '$window', function($scope, $window) {
 
 	$scope.page = null;
 	$scope.highscores = null;
 	$scope.UserName = "Visiteur";
 	
-	var rootApi = 'https://1-dot-statefull-battle.appspot.com/_ah/api/';
-	
-	//initialisation de la liaison entre l'api et l'interface
-	$window.init = function() {
-		console.log("windowinit called");
-		
-		console.log("Chargement de l'API");
-		
-		var functionLoadQuestion = function() {
-						console.log("Chargement des questions et des réponses");
-						var req = gapi.client.questionentityendpoint.listQuestionEntity();
-						req.execute(
-							function(resp) {
-								$scope.listQuestions = resp.items;
-								$scope.$apply();
-								console.log(resp);
-							}
-						);
-					}
-					
-		gapi.client.load('questionentityendpoint', 'v1', functionLoadQuestion, rootApi);
-	}
+	$scope.onSignIn = function(googleUser) {
+  var profile = googleUser.getBasicProfile();
+  console.log('ID: ' + profile.getId()); // Do not send to your backend! Use an ID token instead.
+  console.log('Name: ' + profile.getName());
+  console.log('Image URL: ' + profile.getImageUrl());
+  console.log('Email: ' + profile.getEmail());
+}
+
 	
 	//Sélection de la page
 	$scope.selectPage = function(page){
@@ -83,36 +142,6 @@ battlemind.controller('AppController', ['$scope', '$window', function($scope, $w
 		  } 
 
 		  return ratings;
-	}
-	
-	//Gestion de la connexion au compte Google
-	$scope.signUp = function(googleUser){
-		console.log("Auth Google");
-		var profile = googleUser.getBasicProfile();
-		console.log('ID: ' + profile.getId());
-		console.log('Name: ' + profile.getName());
-		console.log('Email: ' + profile.getEmail());
-	}
-	
-	//Gestion de la déconnexion du compte Google
-	$scope.signOut = function(){
-		
-	}
-	
-	$scope.majConnexion = function (name){	 
-		console.log("Methode : majConnexion");
-		$scope.connecte = !$scope.connecte;
-		if($scope.connecte){
-			$scope.accueil = false;
-		}
-		else {
-			$scope.accueil = true;
-			$scope.affichageVote = true;
-			$scope.affichageFin = true;
-			$scope.partieVote = true;			
-			$scope.affichageResultat = true;
-		}
-		$scope.UserName = name;
 	}
 	
 	$scope.selectPage('jouer');
