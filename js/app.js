@@ -92,73 +92,79 @@ battleMind.config(function($routeProvider)
 	}
 );
 
-battleMind.controller('AppController', ['$rootScope', '$scope', '$location', 
-	function($rootScope, $scope, $location) 
+battleMind.controller('AppController', ['$rootScope', '$scope', '$location', 'GApi',
+	function($rootScope, $scope, $location, GApi) 
 	{
-	$scope.infos = {
-			answered: 0,
-			well_answered: 0,
-			life: 3,
-			nolife: 0,
-			name: null,
-			highscores: 0
-		}
-		
-	$scope.checkName = function()
-	{
-		if(typeof $rootScope.currentUser == 'undefined')
+		$scope.infos = {
+				answered: 0,
+				well_answered: 0,
+				life: 3,
+				nolife: 0,
+				name: null,
+				highscores: 0
+			}
+			
+		$scope.checkName = function()
 		{
-			console.log("Local check account");
-			if($scope.infos.name == null)
+			if(typeof $rootScope.currentUser == 'undefined')
 			{
-				$location.path('/');
-				var alertNameHP = document.getElementById("alertName");
-				if(alertNameHP.style.display=="none") 
+				console.log("Local check account");
+				if($scope.infos.name == null)
 				{
-					alertNameHP.style.display = "block";
+					$location.path('/');
+					var alertNameHP = document.getElementById("alertName");
+					if(alertNameHP.style.display=="none") 
+					{
+						alertNameHP.style.display = "block";
+					}
+					document.getElementById('inputName').focus();
+				}
+				else
+				{
+					$location.path('/game');
 				}
 			}
-			else
-			{
-				$location.path('/game');
-			}
+		}
+		
+		GApi.execute('questionentityendpoint', 'questionentityendpoint.listQuestionEntity').then( function(resp) {
+			console.log("Chargement");
+		});
+		
+	// 	$scope.onSignIn = function(googleUser) {
+	// 		var profile = googleUser.getBasicProfile();
+	// 		console.log('ID: ' + profile.getId()); // Do not send to your backend! Use an ID token instead.
+	// 		console.log('Name: ' + profile.getName());
+	// 		console.log('Image URL: ' + profile.getImageUrl());
+	// 		console.log('Email: ' + profile.getEmail());
+	// 		}
+		
+
+		
+	// 	$scope.restart = function(){
+	// 
+	// 		$scope.questions = {
+	// 			answered: 0,
+	// 			well_answered: 0,
+	// 			life: 3,
+	// 			nolife: 0,
+	// 			name: null
+	// 		}
+	// 
+	// 		$scope.nextQuestion();
+	// 	}
+		
+		$scope.nextQuestion = function(){
+			//Code de sélection de la question et de ses réponses
+		}
+		
+		//Gestion de la vie
+		$scope.getLife = function(count){
+			var ratings = []; 
+
+			for (var i = 0; i < count; i++) { 
+				ratings.push(i) 
+			} 
+			return ratings;
 		}
 	}
-	
-// 	$scope.onSignIn = function(googleUser) {
-// 		var profile = googleUser.getBasicProfile();
-// 		console.log('ID: ' + profile.getId()); // Do not send to your backend! Use an ID token instead.
-// 		console.log('Name: ' + profile.getName());
-// 		console.log('Image URL: ' + profile.getImageUrl());
-// 		console.log('Email: ' + profile.getEmail());
-// 		}
-	
-
-	
-// 	$scope.restart = function(){
-// 
-// 		$scope.questions = {
-// 			answered: 0,
-// 			well_answered: 0,
-// 			life: 3,
-// 			nolife: 0,
-// 			name: null
-// 		}
-// 
-// 		$scope.nextQuestion();
-// 	}
-	
-	$scope.nextQuestion = function(){
-		//Code de sélection de la question et de ses réponses
-	}
-	
-	//Gestion de la vie
-	$scope.getLife = function(count){
-		  var ratings = []; 
-
-		  for (var i = 0; i < count; i++) { 
-			ratings.push(i) 
-		  } 
-		  return ratings;
-	}
-}]);
+]);
