@@ -1,0 +1,21 @@
+<div class="row">
+	<div class="col-md-6 col-md-offset-3">
+		<div class="panel panel-primary">
+			<div class="panel-heading">
+				<h2><span class="glyphicon glyphicon-user"></span> Nom du joueur</h2>
+			</div>
+			<div class="panel-body">
+				<div class="form-group">
+					<input type="text" class="form-control" ng-model="input_name">
+				</div>
+				<a href="#/game"><button class="btn btn-success pull-right" ng-click="questions.name=input_name">Commencer à jouer</button></a>
+			</div>
+		</div>
+		<div class="well">
+			<h3>Principe du jeu</h3>
+			<p>Une série de questions vont  vous être posées. Chaque bonne réponse rapporte 1 point pour le score final.</p>
+			<p>Vous disposez de 3 vies pour chaque partie. À chaque mauvaise réponse, une vie est retirée. La partie se termine lorsqu'il ne vous reste plus aucune vie.</p>
+			<p>Bonne chance !</p>
+		</div>
+	</div>
+</div>

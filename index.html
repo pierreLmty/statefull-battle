@@ -11,144 +11,38 @@
 		<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.8/angular-cookies.js"></script>
 		<script src="js/app.js"></script>
 		<meta name="google-signin-client_id" content="318394981972-1lf9m33h1fc6hasa945ljetqnun0tfu2.apps.googleusercontent.com"> 
-		<script src="https://apis.google.com/js/platform.js" async defer></script>
+<!-- 		<script src="https://apis.google.com/js/platform.js" async defer></script> -->
 
 	</head>
 	
+		
+	
 	<body ng-controller="AppController">
-		<nav class="navbar navbar-inverse">
-			<div class="container">
-				<div class="navbar-header">
-					<span style="cursor:default" class="navbar-brand">Statefull Battle</span>
-				</div>
-				<div class="navbar-collapse collapse">
-					<ul class="nav navbar-nav">
-						<li style="cursor:pointer"><a ng-click="selectPage('jouer')">Jouer</a></li>
-						<li style="cursor:pointer"><a ng-click="selectPage('highscores')">High scores</a></li>
-						<li style="cursor:pointer"><a href="https://github.com/pierreLmty/statefull-battle" target="_blank">GitHub</a></li>
-					</ul>
-					<div class="navbar-right">
-						<a class="btn btn-default navbar-btn" ng-click="signUp()"><span class="glyphicon glyphicon-lock"></span> Se connecter</a>
-						<div class="g-signin2" data-onsuccess="onSignIn"></div>
-
+		<header>
+			<nav class="navbar navbar-inverse">
+				<div class="container">
+					<div class="navbar-header">
+						<a href="#/"><span class="navbar-brand">Statefull Battle</span></a>
 					</div>
+					<div class="navbar-collapse collapse">
+						<ul class="nav navbar-nav">
+							<li style="cursor:pointer"><a href="#/highscores">High scores</a></li>
+							<li style="cursor:pointer"><a href="https://github.com/pierreLmty/statefull-battle" target="_blank">GitHub</a></li>
+						</ul>
+						<div class="navbar-right">
+							<a class="btn btn-default navbar-btn" ng-click="signUp()"><span class="glyphicon glyphicon-lock"></span> Se connecter avec Google</a>
+<!-- 							<div class="g-signin2" data-onsuccess="onSignIn"></div> -->
+						</div>
+					</div>
+					
 				</div>
-				
-			</div>
-		</nav>
+			</nav>
+		</header>
 		
 		<div class="container" style="margin-top:6em">
-			<div ng-show="page == 'jouer'">
-				<div class="row" ng-show="questions.name == null">
-					<div class="col-md-6 col-md-offset-3">
-						<div class="panel panel-primary">
-							<div class="panel-heading">
-								<h2><span class="glyphicon glyphicon-user"></span> Nom du joueur</h2>
-							</div>
-							<div class="panel-body">
-								<div class="form-group">
-									<input type="text" class="form-control" ng-model="input_name">
-								</div>
-								<button class="btn btn-success pull-right" ng-click="questions.name=input_name">Commencer à jouer</button>
-							</div>
-						</div>
-						<div class="well">
-							<h3>Principe du jeu</h3>
-							<p>Une série de questions vont  vous être posées. Chaque bonne réponse rapporte 1 point pour le score final.</p>
-							<p>Vous disposez de 3 vies pour chaque partie. À chaque mauvaise réponse, une vie est retirée. La partie se termine lorsqu'il ne vous reste plus aucune vie.</p>
-							<p>Bonne chance !</p>
-						</div>
-					</div>
-				</div>
-				
-				<div class="row" ng-show="questions.name != null">
-					
-					<div class="col-md-6 col-md-offset-3">
-						<div class="panel panel-primary">
-							<div class="panel-heading">
-									 <h3>Question n° : </h3>
-							</div>
-							<div class="panel-body row">
-									<p>Réponses possibles de la question</p>
-							</div>
-						</div>
-<!-- 						<div class="progress"> -->
-<!-- 								Progression des questions -->
-<!-- 						</div> -->
-					</div>
-					
-					<div class="col-md-2">
-						<div class="panel panel-info">
-							<div class="panel-heading">
-								<h4>Vies restantes</h4>
-							</div>
-							<div class="panel-body">
-								<span ng-repeat="i in getLife(questions.life)"><img style="margin-left:0.7em" alt="coeur plein" height="30" width="30" src="css/image/coeur_plein.png"></span>
-								<span ng-repeat="i in getLife(questions.nolife)"><img style="margin-left:0.7em" alt="coeur vide" height="30" width="30" src="css/image/coeur_vide.png"></span>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
+		
+			<div ng-view></div>
 			
-			<div ng-show="page == 'correction'">
-				<div class="row">
-					<div class="col-md-6 col-md-offset-3">
-						<div class="panel panel-info">
-							<div class="panel-heading">
-								<h4>A propos de votre partie</h4>
-							</div>
-							<div class="panel-body">
-								<p>Votre score : </p>
-								<p>Nombre de questions posées : </p>
-								<p>Nombre de bonnes réponses : </p>
-								<p>Nombre de mauvaises réponses : </p>
-							</div>
-						</div>
-					</div>
-					<div class="col-md-6 col-md-offset-3">
-						<table class="table">
-							<thead>
-								<tr>
-									<th>Question</th>
-									<th>Bonne réponse</th>
-								</tr>
-							</thead>
-							<tbody>
-								
-							</tbody>
-						</table>
-					</div>
-				</div>
-			</div>
-			
-			<div ng-show="page == 'highscores'">
-				<div class="row">
-					<div class="col-md-6 col-md-offset-3">
-						<table class="table table-bordered">
-							<thead>
-								<tr class="info">
-									<th>Place</th>
-									<th>Nom</th>
-									<th>Score</th>
-								</tr>
-							</thead>
-							<tbody style="background-color:white">
-								<tr>
-									<td>1</td>
-									<td>Un nom</td>
-									<td>Un score</td>
-								</tr>
-								<tr>
-									<td>2</td>
-									<td>Un autre nom</td>
-									<td>Un autre score</td>
-								</tr>
-							</tbody>
-						</table>
-					</div>
-				</div>
-			</div>
 		</div>
 		
 		<footer class="footer-panel-perso"><p class="text-muted">Gillier Pierre-Olivier - Grondin Mathieu - Jain Edwin - Lemétayer Pierre - M1 ALMA 2016/2017</p></footer>

@@ -32,7 +32,7 @@ battleMind.run(['GAuth', 'GApi', 'GData', '$cookies', '$rootScope',
 // 		user.id (Google id)
 // 		user.name (Google account name or email if don't exist)
 // 		user.link (link to Google+ page)
-		
+
 // 		Connexion au compte Google
 		$rootScope.signUp = function()
 			{
@@ -69,64 +69,64 @@ battleMind.run(['GAuth', 'GApi', 'GData', '$cookies', '$rootScope',
 		);
 	}
 	
-//Routing : http://www.w3schools.com/angular/angular_routing.asp
+
 ]);
 
+//Routing : http://www.w3schools.com/angular/angular_routing.asp
+battleMind.config(function($routeProvider) 
+	{
+		$routeProvider
+		.when("/", {
+			templateUrl: "partials/homepage.html"
+		})                    
+		.when("/game", {      
+			templateUrl: "partials/game.html"
+		})                    
+		.when("/gameover", {  
+			templateUrl: "partials/gameover.html"
+		})                    
+		.when("/highscores", {
+			templateUrl: "partials/highscores.html"
+		})
+	}
+);
 
-battleMind.controller('AppController', ['$scope', '$window', function($scope, $window) {
+battleMind.controller('AppController', ['$scope', '$location', 
+	function($scope, $location) 
+	{
 
-	$scope.page = null;
 	$scope.highscores = null;
 	$scope.UserName = "Visiteur";
-	
-	$scope.onSignIn = function(googleUser) {
-  var profile = googleUser.getBasicProfile();
-  console.log('ID: ' + profile.getId()); // Do not send to your backend! Use an ID token instead.
-  console.log('Name: ' + profile.getName());
-  console.log('Image URL: ' + profile.getImageUrl());
-  console.log('Email: ' + profile.getEmail());
-}
-
-	
-	//Sélection de la page
-	$scope.selectPage = function(page){
-		$scope.page = page;
-
-		if (page == 'jouer') {
-			$scope.restart();
-		}
-		else if (page == 'correction'){
-			
-		}
-		else if (page == 'highscores'){
-			var functionScore = function() {
-						console.log("score api loaded");
-						var req = gapi.client.questionentityendpoint.listScoreEntity();
-						req.execute(
-							function(resp) {
-								$scope.scores=resp.items;
-								$scope.$apply();
-								console.log(resp);
-							}
-						);
-					}
-		
-			gapi.client.load('questionentityendpoint', 'v1', functionScore, rootApi);
-		}
-	}
-	
-	$scope.restart = function(){
-
-		$scope.questions = {
+	$scope.questions = {
 			answered: 0,
 			well_answered: 0,
 			life: 3,
 			nolife: 0,
 			name: null
 		}
+	
+// 	$scope.onSignIn = function(googleUser) {
+// 		var profile = googleUser.getBasicProfile();
+// 		console.log('ID: ' + profile.getId()); // Do not send to your backend! Use an ID token instead.
+// 		console.log('Name: ' + profile.getName());
+// 		console.log('Image URL: ' + profile.getImageUrl());
+// 		console.log('Email: ' + profile.getEmail());
+// 		}
+	
 
-		$scope.nextQuestion();
-	}
+	
+// 	$scope.restart = function(){
+// 
+// 		$scope.questions = {
+// 			answered: 0,
+// 			well_answered: 0,
+// 			life: 3,
+// 			nolife: 0,
+// 			name: null
+// 		}
+// 
+// 		$scope.nextQuestion();
+// 	}
 	
 	$scope.nextQuestion = function(){
 		//Code de sélection de la question et de ses réponses
@@ -143,6 +143,4 @@ battleMind.controller('AppController', ['$scope', '$window', function($scope, $w
 
 		  return ratings;
 	}
-	
-	$scope.selectPage('jouer');
 }]);
