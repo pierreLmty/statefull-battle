@@ -88,6 +88,7 @@ battleMind.config(function($routeProvider)
 		.when("/highscores", {
 			templateUrl: "partials/highscores.html"
 		})
+		.otherwise({redirectTo: "/"})
 	}
 );
 
