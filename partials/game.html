@@ -2,7 +2,7 @@
 	<div class="col-md-6 col-md-offset-3">
 		<div class="panel panel-primary">
 			<div class="panel-heading">
-						<h3>Question n° : {{questions.life}}</h3>
+						<h3>Question n° : {{infos.name}}</h3>
 			</div>
 			<div class="panel-body row">
 					<p>Réponses possibles de la question</p>
@@ -16,8 +16,8 @@
 				<h4>Vies restantes</h4>
 			</div>
 			<div class="panel-body">
-				<span ng-repeat="i in getLife(questions.life)"><img style="margin-left:0.7em" alt="coeur plein" height="30" width="30" src="css/image/coeur_plein.png"></span>
-				<span ng-repeat="i in getLife(questions.nolife)"><img style="margin-left:0.7em" alt="coeur vide" height="30" width="30" src="css/image/coeur_vide.png"></span>
+				<span ng-repeat="i in getLife(infos.life)"><img style="margin-left:0.7em" alt="coeur plein" height="30" width="30" src="css/image/coeur_plein.png"></span>
+				<span ng-repeat="i in getLife(infos.nolife)"><img style="margin-left:0.7em" alt="coeur vide" height="30" width="30" src="css/image/coeur_vide.png"></span>
 			</div>
 		</div>
 	</div>

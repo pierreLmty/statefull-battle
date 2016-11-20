@@ -91,19 +91,38 @@ battleMind.config(function($routeProvider)
 	}
 );
 
-battleMind.controller('AppController', ['$scope', '$location', 
-	function($scope, $location) 
+battleMind.controller('AppController', ['$rootScope', '$scope', '$location', 
+	function($rootScope, $scope, $location) 
 	{
-
-	$scope.highscores = null;
-	$scope.UserName = "Visiteur";
-	$scope.questions = {
+	$scope.infos = {
 			answered: 0,
 			well_answered: 0,
 			life: 3,
 			nolife: 0,
-			name: null
+			name: null,
+			highscores: 0
 		}
+		
+	$scope.checkName = function()
+	{
+		if(typeof $rootScope.currentUser == 'undefined')
+		{
+			console.log("Local check account");
+			if($scope.infos.name == null)
+			{
+				$location.path('/');
+				var alertNameHP = document.getElementById("alertName");
+				if(alertNameHP.style.display=="none") 
+				{
+					alertNameHP.style.display = "block";
+				}
+			}
+			else
+			{
+				$location.path('/game');
+			}
+		}
+	}
 	
 // 	$scope.onSignIn = function(googleUser) {
 // 		var profile = googleUser.getBasicProfile();
@@ -134,13 +153,11 @@ battleMind.controller('AppController', ['$scope', '$location',
 	
 	//Gestion de la vie
 	$scope.getLife = function(count){
-
 		  var ratings = []; 
 
 		  for (var i = 0; i < count; i++) { 
 			ratings.push(i) 
 		  } 
-
 		  return ratings;
 	}
 }]);
