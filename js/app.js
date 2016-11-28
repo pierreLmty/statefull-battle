@@ -1,4 +1,4 @@
-var battleMind = angular.module('battlemind', ['angular-google-gapi', 'ngCookies', 'ngRoute']);
+var battleMind = angular.module('battlemind', ['angular-google-gapi', 'ngCookies', 'ngRoute', 'ngSanitize']);
 
 //Avec authentification Google
 //code source : https://github.com/maximepvrt/angular-google-gapi
@@ -7,7 +7,7 @@ battleMind.run(['GAuth', 'GApi', 'GData', '$cookies', '$rootScope', '$location',
 	{
 		var CLIENT = '318394981972-1lf9m33h1fc6hasa945ljetqnun0tfu2.apps.googleusercontent.com';
 		var BASE = 'https://1-dot-statefull-battle.appspot.com/_ah/api';
-
+		
 		GApi.load('questionentityendpoint','v1',BASE).then(function(resp)
 			{
 				//Log de console, bonne liaison avec l'api
@@ -20,11 +20,24 @@ battleMind.run(['GAuth', 'GApi', 'GData', '$cookies', '$rootScope', '$location',
 			});
 		
 		GAuth.setClient(CLIENT)
-
 		GAuth.setScope('https://www.googleapis.com/auth/userinfo.profile');
 		GAuth.load();
 		
-		GData.setUserId($cookies.get('userId'));
+		if ($cookies.get("userId")) {
+			GData.setUserId($cookies.get('userId'));
+			
+//	 		Check de la connexion au compte
+			GAuth.checkAuth().then(
+				function (user)
+				{
+					$rootScope.currentUser = user;
+					console.log(user.name + ' is already logged in');
+				},
+				function() {
+					console.log('Erreur de check connexion');
+				}
+			)
+		}
 		
 // 		User object :
 // 		user.email
@@ -41,8 +54,7 @@ battleMind.run(['GAuth', 'GApi', 'GData', '$cookies', '$rootScope', '$location',
 						console.log(user.name + ' is logged in');
 						$rootScope.currentUser = user;
 						$cookies.put('userId', user.id);
-						$location.path('/game');
-						
+						$location.path('/game');						
 					}, 
 					function() 
 					{
@@ -52,27 +64,12 @@ battleMind.run(['GAuth', 'GApi', 'GData', '$cookies', '$rootScope', '$location',
 			
 		 $rootScope.logout = function() 
 			{
-				GAuth.logout().then(function () 
-					{
-						$rootScope.currentUser = null;
-						$cookies.remove('userId');
-						location.path('/homepage');
-					});
+				GAuth.logout();
+				$rootScope.currentUser = null;
+				$cookies.remove('userId');
+				$location.path('/homepage');
 			};
-				
-		//Check de la connexion au compte
-// 		GAuth.checkAuth().then(
-// 			function (user)
-// 			{
-// 				console.log(user.name + ' is already logged in');
-// 			},
-// 			function() {
-// 				console.log('Erreur de check connexion');
-// 			}
-// 		);
 	}
-	
-
 ]);
 
 //Routing : http://www.w3schools.com/angular/angular_routing.asp
@@ -103,45 +100,16 @@ battleMind.controller('AppController', ['$rootScope', '$scope', '$location', 'GA
 				well_answered: 0,
 				life: 3,
 				nolife: 0,
-				name: null,
 				highscores: 0
 			}
-			
-		$scope.checkName = function()
-		{
-			if(typeof $rootScope.currentUser == 'undefined')
+		
+		GApi.execute('questionentityendpoint', 'questionentityendpoint.listQuestionEntity').then(function(resp)
 			{
-				console.log("Local check account");
-				if($scope.infos.name == null)
-				{
-					$location.path('/');
-					var alertNameHP = document.getElementById("alertName");
-					if(alertNameHP.style.display=="none") 
-					{
-						alertNameHP.style.display = "block";
-					}
-					document.getElementById('inputName').focus();
-				}
-				else
-				{
-					$location.path('/game');
-				}
-			}
-		}
-		
-		GApi.execute('questionentityendpoint', 'questionentityendpoint.listQuestionEntity').then( function(resp) {
-			console.log("Chargement"); //TODO
-		});
-		
-	// 	$scope.onSignIn = function(googleUser) {
-	// 		var profile = googleUser.getBasicProfile();
-	// 		console.log('ID: ' + profile.getId()); // Do not send to your backend! Use an ID token instead.
-	// 		console.log('Name: ' + profile.getName());
-	// 		console.log('Image URL: ' + profile.getImageUrl());
-	// 		console.log('Email: ' + profile.getEmail());
-	// 		}
-		
-
+				console.log("Chargement"); //TODO
+			},function() 
+			{
+				console.log('Erreur de connexion');
+			});
 		
 	// 	$scope.restart = function(){
 	// 

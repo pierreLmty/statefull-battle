@@ -2,24 +2,15 @@
 	<div class="col-md-6 col-md-offset-3">
 		<div class="panel panel-primary">
 			<div class="panel-heading">
-				<h2><span class="glyphicon glyphicon-user"></span> Nom du joueur</h2>
+				<h1>Statefull Battle</h2>
 			</div>
 			<div class="panel-body">
-				<div class="form-group">
-					<input type="text" id="inputName" class="form-control" ng-model="input_name">
-				</div>
-				<button class="btn btn-success pull-right" ng-click="infos.name=input_name; checkName()">Commencer à jouer</button>
+				<h3>Principe du jeu</h3>
+				<p>Une série de questions vont  vous être posées. Chaque bonne réponse rapporte 1 point pour le score final.</p>
+				<p>Vous disposez de 3 vies pour chaque partie. À chaque mauvaise réponse, une vie est retirée. La partie se termine lorsqu'il ne vous reste plus aucune vie.</p>
+				<p>Pour jouer vous devez utiliser votre compte Google.</p>
+				<p>Bonne chance !</p>
 			</div>
-		</div>
-		<div class="alert alert-danger" id="alertName" style="display:none;"">
-				<strong>Attention!</strong> Si vous n'utilisez pas de compte Google, vous devez obligatoirement entrer un nom.
-		</div>
-		<div class="well">
-			<h3>Principe du jeu</h3>
-			<p>Une série de questions vont  vous être posées. Chaque bonne réponse rapporte 1 point pour le score final.</p>
-			<p>Vous disposez de 3 vies pour chaque partie. À chaque mauvaise réponse, une vie est retirée. La partie se termine lorsqu'il ne vous reste plus aucune vie.</p>
-			<p>Vous avez la possibilité de jouer avec simplement un pseudo ou bien utiliser votre compte Google si vous en avez un.</p>
-			<p>Bonne chance !</p>
 		</div>
 	</div>
 </div>

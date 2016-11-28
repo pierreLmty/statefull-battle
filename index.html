@@ -9,10 +9,9 @@
 		<script src="js/angular-google-gapi/dist/angular-google-gapi.min.js"></script>
 		<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.8/angular-route.js"></script>
 		<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.8/angular-cookies.js"></script>
+		<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.8/angular-sanitize.js"></script>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
 		<script src="js/app.js"></script>
-		<meta name="google-signin-client_id" content="318394981972-1lf9m33h1fc6hasa945ljetqnun0tfu2.apps.googleusercontent.com"> 
-<!-- 		<script src="https://apis.google.com/js/platform.js" async defer></script> -->
-
 	</head>
 	
 		
@@ -26,15 +25,15 @@
 					</div>
 					<div class="navbar-collapse collapse">
 						<ul class="nav navbar-nav">
+							<li ng-show="currentUser" style="cursor:pointer"><a href="#/game">Jouer</a></li>
 							<li style="cursor:pointer"><a href="#/highscores">High scores</a></li>
 							<li style="cursor:pointer"><a href="https://github.com/pierreLmty/statefull-battle" target="_blank">GitHub</a></li>
 						</ul>
 						<div class="navbar-right">
-							<a class="btn btn-default navbar-btn" ng-click="signUp()"><span class="glyphicon glyphicon-lock"></span> Se connecter avec Google {{currentUser.name}}</a>
-<!-- 							<div class="g-signin2" data-onsuccess="onSignIn"></div> -->
+							<a class="btn btn-default navbar-btn" ng-show="!currentUser" ng-click="signUp()"><span class="glyphicon glyphicon-lock"></span> Se connecter avec Google</a>
+							<img ng-show="currentUser" ng-src="{{currentUser.picture}}" style="width:30px;"> <span ng-show="currentUser" style="color:#9d9d9d">{{currentUser.name}}</span> <a class="btn btn-default navbar-btn" ng-show="currentUser" ng-click="logout()">Se déconnecter</a>
 						</div>
 					</div>
-					
 				</div>
 			</nav>
 		</header>
