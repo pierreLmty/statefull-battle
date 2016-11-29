@@ -8,14 +8,12 @@ battleMind.run(['GAuth', 'GApi', 'GData', '$cookies', '$rootScope', '$location',
 		var CLIENT = '318394981972-1lf9m33h1fc6hasa945ljetqnun0tfu2.apps.googleusercontent.com';
 		var BASE = 'https://1-dot-statefull-battle.appspot.com/_ah/api';
 		
-		GApi.load('questionentityendpoint','v1',BASE).then(function(resp)
+		GApi.load('questionentityAPI','v1',BASE).then(function(resp)
 			{
-				//Log de console, bonne liaison avec l'api
 				console.log('api: ' + resp.api + ', version: ' + resp.version + ' loaded');
 			}, 
 			function(resp)
 			{
-				//Log de console, mauvaise liaison avec l'api
 				console.log('an error occured during loading api: ' + resp.api + ', resp.version: ' + version);
 			});
 		
@@ -65,6 +63,7 @@ battleMind.run(['GAuth', 'GApi', 'GData', '$cookies', '$rootScope', '$location',
 		 $rootScope.logout = function() 
 			{
 				GAuth.logout();
+				console.log('Déconnexion');
 				$rootScope.currentUser = null;
 				$cookies.remove('userId');
 				$location.path('/homepage');
@@ -75,57 +74,60 @@ battleMind.run(['GAuth', 'GApi', 'GData', '$cookies', '$rootScope', '$location',
 //Routing : http://www.w3schools.com/angular/angular_routing.asp
 battleMind.config(function($routeProvider) 
 	{
+
 		$routeProvider
 		.when("/", {
-			templateUrl: "partials/homepage.html"
+			templateUrl: "partials/homepage.html",
+			controller: "HomepageCtrl"
 		})                    
 		.when("/game", {      
-			templateUrl: "partials/game.html"
+			templateUrl: "partials/game.html",
+			controller: "GameCtrl"
 		})                    
 		.when("/gameover", {  
-			templateUrl: "partials/gameover.html"
+			templateUrl: "partials/gameover.html",
+			controller: "GameoverCtrl"
 		})                    
 		.when("/highscores", {
-			templateUrl: "partials/highscores.html"
+			templateUrl: "partials/highscores.html",
+			controller: "HighscoresCtrl"
 		})
 		.otherwise({redirectTo: "/"})
 	}
 );
 
-battleMind.controller('AppController', ['$rootScope', '$scope', '$location', 'GApi',
-	function($rootScope, $scope, $location, GApi) 
+battleMind.controller('HomepageCtrl', ['$rootScope', 
+	function($rootScope) 
 	{
-		$scope.infos = {
+		$rootScope.infos = {
 				answered: 0,
 				well_answered: 0,
 				life: 3,
 				nolife: 0,
 				highscores: 0
 			}
+	}
+]);
+
+battleMind.controller('GameCtrl', ['$rootScope', '$scope' , '$location', 'GApi',
+	function($rootScope, $scope, $location, GApi)
+	{
+		if (!$scope.currentUser) 
+		{
+			$location.path('/');
+		}
 		
-		GApi.execute('questionentityendpoint', 'questionentityendpoint.listQuestionEntity').then(function(resp)
-			{
-				console.log("Chargement"); //TODO
-			},function() 
-			{
-				console.log('Erreur de connexion');
-			});
-		
-	// 	$scope.restart = function(){
-	// 
-	// 		$scope.questions = {
-	// 			answered: 0,
-	// 			well_answered: 0,
-	// 			life: 3,
-	// 			nolife: 0,
-	// 			name: null
-	// 		}
-	// 
-	// 		$scope.nextQuestion();
-	// 	}
+// 		GApi.execute('questionentityAPI', 'questionentityendpoint.listQuestionEntity').then(function(resp)
+// 			{
+// 				console.log("Chargement");
+// 			},function() 
+// 			{
+// 				console.log('Erreur de connexion');
+// 			});
 		
 		$scope.nextQuestion = function(){
 			//Code de sélection de la question et de ses réponses
+				
 		}
 		
 		//Gestion de la vie
@@ -137,5 +139,41 @@ battleMind.controller('AppController', ['$rootScope', '$scope', '$location', 'GA
 			} 
 			return ratings;
 		}
+	}
+]);
+
+battleMind.controller('GameoverCtrl', ['$rootScope', '$scope', '$location',
+	function($rootScope, $scope, $location)
+	{
+		if (!$scope.currentUser) 
+		{
+			$location.path('/');
+		}
+		
+		$scope.restart = function(){
+	
+			$rootScope.infos = {
+				answered: 0,
+				well_answered: 0,
+				life: 3,
+				nolife: 0,
+				highscores: 0
+			}
+	
+			$location.path('/game');
+		}
+	}
+]);
+
+battleMind.controller('HighscoresCtrl', ['GApi',
+	function(GApi)
+	{
+// 		GApi.execute('questionentityAPI', 'questionentityendpoint.listScoreEntity').then(function(resp)
+// 			{
+// 				console.log("Chargement");
+// 			},function() 
+// 			{
+// 				console.log('Erreur de connexion');
+// 			});
 	}
 ]);
