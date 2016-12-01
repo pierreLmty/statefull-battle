@@ -8,7 +8,7 @@ battleMind.run(['GAuth', 'GApi', 'GData', '$cookies', '$rootScope', '$location',
 		var CLIENT = '318394981972-1lf9m33h1fc6hasa945ljetqnun0tfu2.apps.googleusercontent.com';
 		var BASE = 'https://1-dot-statefull-battle.appspot.com/_ah/api';
 		
-		GApi.load('questionentityAPI','v1',BASE).then(function(resp)
+		GApi.load('questionentityendpoint','v1',BASE).then(function(resp)
 			{
 				console.log('api: ' + resp.api + ', version: ' + resp.version + ' loaded');
 			}, 
@@ -32,7 +32,7 @@ battleMind.run(['GAuth', 'GApi', 'GData', '$cookies', '$rootScope', '$location',
 					console.log(user.name + ' is already logged in');
 				},
 				function() {
-					console.log('Erreur de check connexion');
+					console.log('Erreur de connexion');
 				}
 			)
 		}
@@ -74,12 +74,15 @@ battleMind.run(['GAuth', 'GApi', 'GData', '$cookies', '$rootScope', '$location',
 //Routing : http://www.w3schools.com/angular/angular_routing.asp
 battleMind.config(function($routeProvider) 
 	{
-
 		$routeProvider
 		.when("/", {
 			templateUrl: "partials/homepage.html",
 			controller: "HomepageCtrl"
-		})                    
+		})
+		.when("/admin", {
+			templateUrl: "partials/admin.html",
+			controller: "AdminCtrl"
+		})
 		.when("/game", {      
 			templateUrl: "partials/game.html",
 			controller: "GameCtrl"
@@ -109,6 +112,42 @@ battleMind.controller('HomepageCtrl', ['$rootScope',
 	}
 ]);
 
+battleMind.controller('AdminCtrl', ['$rootScope', '$scope', '$location', 'GApi',
+	function($rootScope, $scope, $location,  GApi)
+	{
+		if (!$scope.currentUser) 
+		{
+			$location.path('/');
+		}
+		
+		$scope.checkLoad = 0;
+		GApi.execute('questionentityendpoint', 'addQuestions').then(function(resp)
+			{
+				$scope.checkLoad = 1;
+				console.log("Chargement des questions fait");
+				
+			},function() 
+			{
+				$scope.checkLoad = -1;
+				console.log('Erreur de chargement des questions');
+			});
+		console.log("Fin de chargement");
+		
+		$scope.restart = function(){
+	
+			$rootScope.infos = {
+				answered: 0,
+				well_answered: 0,
+				life: 3,
+				nolife: 0,
+				highscores: 0
+			}
+			
+			$location.path('/game');
+		}
+	}
+]);
+
 battleMind.controller('GameCtrl', ['$rootScope', '$scope' , '$location', 'GApi',
 	function($rootScope, $scope, $location, GApi)
 	{
@@ -117,17 +156,30 @@ battleMind.controller('GameCtrl', ['$rootScope', '$scope' , '$location', 'GApi',
 			$location.path('/');
 		}
 		
-// 		GApi.execute('questionentityAPI', 'questionentityendpoint.listQuestionEntity').then(function(resp)
+		GApi.execute('questionentityendpoint', 'listQuestionEntity').then(function(resp)
+			{
+				console.log("Chargement des questions");
+				$scope.questions = resp.items;
+				console.log($scope.questions[0].question);
+				
+			},function() 
+			{
+				console.log('Erreur de connexion');
+			});
+		
+		$scope.nextQuestion = function(){
+			//Code de sélection de la question et de ses réponses
+				
+		}
+		
+		$scope.setScore = function(){
+// 		GApi.execute('questionentityendpoint', 'insertScoreEntity', {}).then(function(resp)
 // 			{
 // 				console.log("Chargement");
 // 			},function() 
 // 			{
 // 				console.log('Erreur de connexion');
 // 			});
-		
-		$scope.nextQuestion = function(){
-			//Code de sélection de la question et de ses réponses
-				
 		}
 		
 		//Gestion de la vie
@@ -168,7 +220,7 @@ battleMind.controller('GameoverCtrl', ['$rootScope', '$scope', '$location',
 battleMind.controller('HighscoresCtrl', ['GApi',
 	function(GApi)
 	{
-// 		GApi.execute('questionentityAPI', 'questionentityendpoint.listScoreEntity').then(function(resp)
+// 		GApi.execute('questionentityendpoint', 'questionentityendpoint.listScoreEntity').then(function(resp)
 // 			{
 // 				console.log("Chargement");
 // 			},function() 

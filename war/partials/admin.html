@@ -1,0 +1,15 @@
+<div class="row">
+	<div class="col-md-6 col-md-offset-3">
+		<div ng-show="checkLoad == 0" class="well">
+			<h3 style="text-align:center">Patientez s'il vous plait</h3>
+			<div style="margin: 0 auto" class="loader"></div>
+		</div>
+		<div ng-show="checkLoad == 1" class="alert alert-success" role="alert">
+			<strong>Well done!</strong> Le Datastore a été rempli!
+		</div>
+		<button ng-show="checkLoad == 1" type="button" class="btn btn-primary pull-right" ng-click="restart()">Aller jouer</button>
+		<div ng-show="checkLoad == -1" class="alert alert-danger" role="alert">
+			<strong>Erreur!</strong> Le Datastore ne s'est pas rempli!
+		</div>
+	</div>
+</div>
