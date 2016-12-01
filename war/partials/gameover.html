@@ -5,10 +5,10 @@
 				<h4>A propos de votre partie</h4>
 			</div>
 			<div class="panel-body">
-				<p>Votre score : </p>
-				<p>Nombre de questions posées : </p>
-				<p>Nombre de bonnes réponses : </p>
-				<p>Nombre de mauvaises réponses : </p>
+				<p>Votre score : {{infos.highscores}}</p>
+				<p>Nombre de questions posées : {{infos.answered}}</p>
+				<p>Nombre de bonnes réponses : {{infos.well_answered}}</p>
+				<p>Nombre de mauvaises réponses : {{infos.answered - infos.well_answered}}</p>
 			</div>
 		</div>
 	</div>

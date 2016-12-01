@@ -156,11 +156,15 @@ battleMind.controller('GameCtrl', ['$rootScope', '$scope' , '$location', 'GApi',
 			$location.path('/');
 		}
 		
+		$scope.nbrQuestion = -1;
+		$scope.indiceQuestion = 0;
+		
 		GApi.execute('questionentityendpoint', 'listQuestionEntity').then(function(resp)
 			{
 				console.log("Chargement des questions");
 				$scope.questions = resp.items;
-				console.log($scope.questions[0].question);
+// 				console.log($scope.questions.length);
+				$scope.nextQuestion();
 				
 			},function() 
 			{
@@ -168,11 +172,64 @@ battleMind.controller('GameCtrl', ['$rootScope', '$scope' , '$location', 'GApi',
 			});
 		
 		$scope.nextQuestion = function(){
+			$scope.nbrQuestion++;
+			$scope.indiceQuestion++;
+			
+			$scope.currentQuestion = $scope.questions[$scope.nbrQuestion].question;
+			$scope.reponse0 = $scope.questions[$scope.nbrQuestion].propositions[0];
+			$scope.reponse1 = $scope.questions[$scope.nbrQuestion].propositions[1];
+			$scope.reponse2 = $scope.questions[$scope.nbrQuestion].propositions[2];
+			$scope.reponse3 = $scope.questions[$scope.nbrQuestion].propositions[3];
+			$scope.goodAnswer = $scope.questions[$scope.nbrQuestion].reponse;
 			//Code de sélection de la question et de ses réponses
-				
+			//Avec nbrQuestion, on cherche dans le tableau questions
+			//Dans le HTML il y a des {{}} pour le numéro de la Q, la Q et des boutons avec des {{}} pour les réponses
+			//Si possible dans les boutons, mettre l'indice de la question dans le bouton qui lance le checkrep(indiceQuestion)
 		}
 		
-		$scope.setScore = function(){
+		$scope.checkAnswer = function(indiceQuestion, reponse){
+			if(indiceQuestion == reponse)
+			{
+				$rootScope.infos.well_answered++;
+				$rootScope.infos.answered++;
+				$rootScope.infos.highscores++;
+				if($scope.nbrQuestion < $scope.questions.length)
+				{
+					$scope.nextQuestion();
+				}
+				else
+				{
+// 					$scope.setScore($rootScope.infos.highscores);
+					$location.path('/gameover');
+				}
+			}
+			else
+			{
+				$rootScope.infos.life--;
+				$rootScope.infos.nolife++;
+				$rootScope.infos.answered++;
+				if($rootScope.infos.life == 0 || ($scope.nbrQuestion == $scope.questions.length))
+				{
+// 					$scope.setScore($rootScope.infos.highscores);
+					$location.path('/gameover');
+				}
+				else
+				{
+					$scope.nextQuestion();
+				}
+			}
+		}
+		
+		$scope.setScore = function(score){
+			GApi.execute('questionentityendpoint', 'getScoreEntity').then(function(resp)
+				{
+					console.log("Chargement des scores");
+					$score.score = resp.items;
+				},function() 
+				{
+					console.log('Erreur de connexion');
+				});
+
 // 		GApi.execute('questionentityendpoint', 'insertScoreEntity', {}).then(function(resp)
 // 			{
 // 				console.log("Chargement");
@@ -217,15 +274,18 @@ battleMind.controller('GameoverCtrl', ['$rootScope', '$scope', '$location',
 	}
 ]);
 
-battleMind.controller('HighscoresCtrl', ['GApi',
-	function(GApi)
+battleMind.controller('HighscoresCtrl', ['$scope', 'GApi',
+	function($scope, GApi)
 	{
-// 		GApi.execute('questionentityendpoint', 'questionentityendpoint.listScoreEntity').then(function(resp)
-// 			{
-// 				console.log("Chargement");
-// 			},function() 
-// 			{
-// 				console.log('Erreur de connexion');
-// 			});
+		GApi.execute('questionentityendpoint', 'listScoreEntity').then(function(resp)
+			{
+				console.log("Chargement des highScores");
+				$scope.tabHighScore = resp.items;
+				
+			},function() 
+			{
+				console.log('Erreur de connexion');
+			});
+		console.log($scope.tabHighScore);
 	}
 ]);

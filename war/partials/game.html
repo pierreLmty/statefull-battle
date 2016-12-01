@@ -2,10 +2,15 @@
 	<div class="col-md-6 col-md-offset-3">
 		<div class="panel panel-primary">
 			<div class="panel-heading">
-				<h3>Question n° : {{infos.name}}</h3>
+				<h3>Question n°{{indiceQuestion}} : </h3><h4>{{currentQuestion}}</h4>
 			</div>
 			<div class="panel-body row">
-				<p>Réponses possibles de la question</p>
+				<center>
+				<button id="button0" type="button" class="btn btn-lg btn-default" ng-click="checkAnswer(0, goodAnswer)">{{reponse0}}</button><hr>
+				<button id="button1" type="button" class="btn btn-lg btn-default" ng-click="checkAnswer(1, goodAnswer)">{{reponse1}}</button><hr>
+				<button id="button2" type="button" class="btn btn-lg btn-default" ng-click="checkAnswer(2, goodAnswer)">{{reponse2}}</button><hr>
+				<button id="button3" type="button" class="btn btn-lg btn-default" ng-click="checkAnswer(3, goodAnswer)">{{reponse3}}</button>
+				</center>
 			</div>
 		</div>
 	</div>
