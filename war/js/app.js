@@ -156,6 +156,17 @@ battleMind.controller('GameCtrl', ['$rootScope', '$scope' , '$location', 'GApi',
 			$location.path('/');
 		}
 		
+		if($rootScope.infos.answered != 0)
+		{
+			$rootScope.infos = {
+				answered: 0,
+				well_answered: 0,
+				life: 3,
+				nolife: 0,
+				highscores: 0
+			}
+		}
+		
 		$scope.nbrQuestion = -1;
 		$scope.indiceQuestion = 0;
 		
@@ -181,10 +192,6 @@ battleMind.controller('GameCtrl', ['$rootScope', '$scope' , '$location', 'GApi',
 			$scope.reponse2 = $scope.questions[$scope.nbrQuestion].propositions[2];
 			$scope.reponse3 = $scope.questions[$scope.nbrQuestion].propositions[3];
 			$scope.goodAnswer = $scope.questions[$scope.nbrQuestion].reponse;
-			//Code de sélection de la question et de ses réponses
-			//Avec nbrQuestion, on cherche dans le tableau questions
-			//Dans le HTML il y a des {{}} pour le numéro de la Q, la Q et des boutons avec des {{}} pour les réponses
-			//Si possible dans les boutons, mettre l'indice de la question dans le bouton qui lance le checkrep(indiceQuestion)
 		}
 		
 		$scope.checkAnswer = function(indiceQuestion, reponse){
@@ -220,25 +227,6 @@ battleMind.controller('GameCtrl', ['$rootScope', '$scope' , '$location', 'GApi',
 			}
 		}
 		
-		$scope.setScore = function(score){
-			GApi.execute('questionentityendpoint', 'getScoreEntity').then(function(resp)
-				{
-					console.log("Chargement des scores");
-					$score.score = resp.items;
-				},function() 
-				{
-					console.log('Erreur de connexion');
-				});
-
-// 		GApi.execute('questionentityendpoint', 'insertScoreEntity', {}).then(function(resp)
-// 			{
-// 				console.log("Chargement");
-// 			},function() 
-// 			{
-// 				console.log('Erreur de connexion');
-// 			});
-		}
-		
 		//Gestion de la vie
 		$scope.getLife = function(count){
 			var ratings = []; 
@@ -251,12 +239,61 @@ battleMind.controller('GameCtrl', ['$rootScope', '$scope' , '$location', 'GApi',
 	}
 ]);
 
-battleMind.controller('GameoverCtrl', ['$rootScope', '$scope', '$location',
-	function($rootScope, $scope, $location)
+battleMind.controller('GameoverCtrl', ['$rootScope', '$scope', '$location', 'GApi',
+	function($rootScope, $scope, $location, GApi)
 	{
-		if (!$scope.currentUser) 
+		if (!$scope.currentUser || ($rootScope.infos.life != 0)) 
 		{
 			$location.path('/');
+		}
+		
+		$scope.niceScore = 0;
+		
+		GApi.execute('questionentityendpoint', 'listScoreEntity').then(function(resp)
+			{
+				console.log("Chargement des scores");
+				$scope.score = resp.items;
+				
+				//Tri du tableau en ordre décroissant
+				$scope.score.sort(function(a, b){
+					return parseFloat(b.score) - parseFloat(a.score);
+				});
+				
+				$scope.setScore($rootScope.infos.highscores);
+			},function() 
+			{
+				console.log('Erreur de connexion');
+			});
+			//Si le score du joueur est plus grand que le tab[10] alors afficher un message de félicitation
+			
+			//on insert le score qu'importe le score du  joueur
+		$scope.setScore = function(score){
+			
+			if(score == 0)
+			{
+				$scope.niceScore = -2;
+			}
+			else if($scope.score.length < 10 || (score > $scope.score[10].score))
+			{
+				$scope.niceScore = 1;
+				$scope.insertScore(score);
+			}
+			else
+			{
+				$scope.niceScore = -1;
+				$scope.insertScore(score);
+			}
+		}
+		
+		$scope.insertScore = function(score){
+			//id : 
+			GApi.execute('questionentityendpoint', 'insertScoreEntity', {name : $rootScope.currentUser.name, score : score}).then(function(resp)
+				{
+					console.log("Insertion réalisée");
+				},function() 
+				{
+					console.log('Erreur d\'insertion du score');
+				});
 		}
 		
 		$scope.restart = function(){

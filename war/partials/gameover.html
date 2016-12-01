@@ -5,11 +5,22 @@
 				<h4>A propos de votre partie</h4>
 			</div>
 			<div class="panel-body">
-				<p>Votre score : {{infos.highscores}}</p>
-				<p>Nombre de questions posées : {{infos.answered}}</p>
-				<p>Nombre de bonnes réponses : {{infos.well_answered}}</p>
-				<p>Nombre de mauvaises réponses : {{infos.answered - infos.well_answered}}</p>
+				<p>Votre score : <strong>{{infos.highscores}}</strong></p>
+				<p>Nombre de questions posées : <strong>{{infos.answered}}</strong></p>
+				<p>Nombre de bonnes réponses : <strong>{{infos.well_answered}}</strong></p>
+				<p>Nombre de mauvaises réponses : <strong>{{infos.answered - infos.well_answered}}</strong></p>
 			</div>
+		</div>
+	</div>
+	<div class="col-md-6 col-md-offset-3">
+		<div ng-show="niceScore == 1" class="alert alert-success" role="alert">
+			<strong>Well done!</strong> Vous venez de rentrer dans le top 10!
+		</div>
+		<div ng-show="niceScore == -1" class="alert alert-warning" role="alert">
+			<strong>Dommage!</strong> Il vous manque quelques points pour être dans le top 10! Encore un effort!
+		</div>
+		<div ng-show="niceScore == -2" class="alert alert-danger" role="alert">
+			<strong>Attention!</strong> Il serait peut être temps de revoir son histoire!
 		</div>
 	</div>
 	<div class="col-md-6 col-md-offset-3">
