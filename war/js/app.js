@@ -148,8 +148,8 @@ battleMind.controller('AdminCtrl', ['$rootScope', '$scope', '$location', 'GApi',
 	}
 ]);
 
-battleMind.controller('GameCtrl', ['$rootScope', '$scope' , '$location', 'GApi',
-	function($rootScope, $scope, $location, GApi)
+battleMind.controller('GameCtrl', ['$rootScope', '$scope', '$location', '$timeout', 'GApi',
+	function($rootScope, $scope, $location, $timeout, GApi)
 	{
 		if (!$scope.currentUser) 
 		{
@@ -169,12 +169,14 @@ battleMind.controller('GameCtrl', ['$rootScope', '$scope' , '$location', 'GApi',
 		
 		$scope.nbrQuestion = -1;
 		$scope.indiceQuestion = 0;
+		$scope.indiceQPreT = -1;
+		$scope.indiceQPreF = -1;
 		
 		GApi.execute('questionentityendpoint', 'listQuestionEntity').then(function(resp)
 			{
 				console.log("Chargement des questions");
-				$scope.questions = resp.items;
-// 				console.log($scope.questions.length);
+				$rootScope.questions = resp.items;
+// 				console.log($rootScope.questions.length);
 				$scope.nextQuestion();
 				
 			},function() 
@@ -183,15 +185,24 @@ battleMind.controller('GameCtrl', ['$rootScope', '$scope' , '$location', 'GApi',
 			});
 		
 		$scope.nextQuestion = function(){
+			if($scope.indiceQPreT != -1)
+			{
+				document.getElementById($scope.indiceQPreT).className = "btn btn-lg btn-default ng-binding";		
+			}
+			if($scope.indiceQPreF != -1)
+			{
+				document.getElementById($scope.indiceQPreF).className = "btn btn-lg btn-default ng-binding";
+			}
+			
 			$scope.nbrQuestion++;
 			$scope.indiceQuestion++;
 			
-			$scope.currentQuestion = $scope.questions[$scope.nbrQuestion].question;
-			$scope.reponse0 = $scope.questions[$scope.nbrQuestion].propositions[0];
-			$scope.reponse1 = $scope.questions[$scope.nbrQuestion].propositions[1];
-			$scope.reponse2 = $scope.questions[$scope.nbrQuestion].propositions[2];
-			$scope.reponse3 = $scope.questions[$scope.nbrQuestion].propositions[3];
-			$scope.goodAnswer = $scope.questions[$scope.nbrQuestion].reponse;
+			$scope.currentQuestion = $rootScope.questions[$scope.nbrQuestion].question;
+			$scope.reponse0 = $rootScope.questions[$scope.nbrQuestion].propositions[0];
+			$scope.reponse1 = $rootScope.questions[$scope.nbrQuestion].propositions[1];
+			$scope.reponse2 = $rootScope.questions[$scope.nbrQuestion].propositions[2];
+			$scope.reponse3 = $rootScope.questions[$scope.nbrQuestion].propositions[3];
+			$scope.goodAnswer = $rootScope.questions[$scope.nbrQuestion].reponse;
 		}
 		
 		$scope.checkAnswer = function(indiceQuestion, reponse){
@@ -200,14 +211,19 @@ battleMind.controller('GameCtrl', ['$rootScope', '$scope' , '$location', 'GApi',
 				$rootScope.infos.well_answered++;
 				$rootScope.infos.answered++;
 				$rootScope.infos.highscores++;
-				if($scope.nbrQuestion < $scope.questions.length)
+				$scope.indiceQPreT = indiceQuestion;
+				document.getElementById(indiceQuestion).className = "btn btn-lg btn-success";
+				if($scope.nbrQuestion < $rootScope.questions.length)
 				{
-					$scope.nextQuestion();
+					$timeout(function () {
+						$scope.nextQuestion();
+					}, 1200);
 				}
 				else
 				{
-// 					$scope.setScore($rootScope.infos.highscores);
-					$location.path('/gameover');
+					$timeout(function () {
+						$location.path('/gameover');
+					}, 1200);
 				}
 			}
 			else
@@ -215,16 +231,31 @@ battleMind.controller('GameCtrl', ['$rootScope', '$scope' , '$location', 'GApi',
 				$rootScope.infos.life--;
 				$rootScope.infos.nolife++;
 				$rootScope.infos.answered++;
-				if($rootScope.infos.life == 0 || ($scope.nbrQuestion == $scope.questions.length))
+				$scope.indiceQPreT = reponse;
+				document.getElementById(reponse).className = "btn btn-lg btn-success";
+				$scope.indiceQPreF = indiceQuestion;
+				document.getElementById(indiceQuestion).className = "btn btn-lg btn-danger";
+				if($rootScope.infos.life == 0 || ($scope.nbrQuestion == $rootScope.questions.length))
 				{
-// 					$scope.setScore($rootScope.infos.highscores);
-					$location.path('/gameover');
+					$timeout(function () {
+						$location.path('/gameover');
+					}, 1200);
 				}
 				else
 				{
-					$scope.nextQuestion();
+					$timeout(function () {
+						$scope.nextQuestion();
+					}, 1200);
 				}
 			}
+		}
+		
+		$scope.initMap = function(){
+			var map = new google.maps.Map(document.getElementById('map'), {
+				center: {lat: -34.397, lng: 150.644},
+				zoom: 8
+			});
+
 		}
 		
 		//Gestion de la vie
@@ -248,10 +279,12 @@ battleMind.controller('GameoverCtrl', ['$rootScope', '$scope', '$location', 'GAp
 		}
 		
 		$scope.niceScore = 0;
+		$scope.tabRep = [];
 		
 		GApi.execute('questionentityendpoint', 'listScoreEntity').then(function(resp)
 			{
 				console.log("Chargement des scores");
+				$scope.copyQuestions();
 				$scope.score = resp.items;
 				
 				//Tri du tableau en ordre décroissant
@@ -294,6 +327,13 @@ battleMind.controller('GameoverCtrl', ['$rootScope', '$scope', '$location', 'GAp
 				{
 					console.log('Erreur d\'insertion du score');
 				});
+		}
+		
+		$scope.copyQuestions = function(){
+			for (i = 0; i < $rootScope.infos.answered; i++) {
+				$scope.tabRep.push({question: $rootScope.questions[i].question, reponse: $rootScope.questions[i].propositions[$rootScope.questions[i].reponse]});
+			}
+			console.log($scope.tabRep);
 		}
 		
 		$scope.restart = function(){
