@@ -36,13 +36,6 @@ battleMind.run(['GAuth', 'GApi', 'GData', '$cookies', '$rootScope', '$location',
 				}
 			)
 		}
-		
-// 		User object :
-// 		user.email
-// 		user.picture (url)
-// 		user.id (Google id)
-// 		user.name (Google account name or email if don't exist)
-// 		user.link (link to Google+ page)
 
 // 		Connexion au compte Google
 		$rootScope.signUp = function()
@@ -171,12 +164,12 @@ battleMind.controller('GameCtrl', ['$rootScope', '$scope', '$location', '$timeou
 		$scope.indiceQuestion = 0;
 		$scope.indiceQPreT = -1;
 		$scope.indiceQPreF = -1;
+		$scope.afficherMaps = false;
 		
 		GApi.execute('questionentityendpoint', 'listQuestionEntity').then(function(resp)
 			{
 				console.log("Chargement des questions");
 				$rootScope.questions = resp.items;
-// 				console.log($rootScope.questions.length);
 				$scope.nextQuestion();
 				
 			},function() 
@@ -198,12 +191,23 @@ battleMind.controller('GameCtrl', ['$rootScope', '$scope', '$location', '$timeou
 			$scope.indiceQuestion++;
 			
 			$scope.currentQuestion = $rootScope.questions[$scope.nbrQuestion].question;
-			$scope.reponse0 = $rootScope.questions[$scope.nbrQuestion].propositions[0];
-			$scope.reponse1 = $rootScope.questions[$scope.nbrQuestion].propositions[1];
-			$scope.reponse2 = $rootScope.questions[$scope.nbrQuestion].propositions[2];
-			$scope.reponse3 = $rootScope.questions[$scope.nbrQuestion].propositions[3];
-			$scope.goodAnswer = $rootScope.questions[$scope.nbrQuestion].reponse;
-		}
+			
+			if($rootScope.questions[$scope.nbrQuestion].type == 2) //Google Maps
+			{
+				$scope.afficherMaps = true;
+				$scope.goodAnswer = $rootScope.questions[$scope.nbrQuestion].reponse;
+				$scope.myMap();
+			}
+			else
+			{
+				$scope.afficherMaps = false;
+				$scope.reponse0 = $rootScope.questions[$scope.nbrQuestion].propositions[0];
+				$scope.reponse1 = $rootScope.questions[$scope.nbrQuestion].propositions[1];
+				$scope.reponse2 = $rootScope.questions[$scope.nbrQuestion].propositions[2];
+				$scope.reponse3 = $rootScope.questions[$scope.nbrQuestion].propositions[3];
+				$scope.goodAnswer = $rootScope.questions[$scope.nbrQuestion].reponse;
+			}
+		};
 		
 		$scope.checkAnswer = function(indiceQuestion, reponse){
 			if(indiceQuestion == reponse)
@@ -248,15 +252,17 @@ battleMind.controller('GameCtrl', ['$rootScope', '$scope', '$location', '$timeou
 					}, 1200);
 				}
 			}
-		}
+		};
 		
-		$scope.initMap = function(){
-			var map = new google.maps.Map(document.getElementById('map'), {
-				center: {lat: -34.397, lng: 150.644},
-				zoom: 8
-			});
-
-		}
+		$scope.myMap = function(){
+			var mapCanvas = document.getElementById("map");
+			var mapOptions = {
+				center: new google.maps.LatLng(51.5, -0.2),
+				zoom: 10
+			}
+			var map = new google.maps.Map(mapCanvas, mapOptions);
+			console.log(map);
+		};
 		
 		//Gestion de la vie
 		$scope.getLife = function(count){
@@ -266,7 +272,7 @@ battleMind.controller('GameCtrl', ['$rootScope', '$scope', '$location', '$timeou
 				ratings.push(i) 
 			} 
 			return ratings;
-		}
+		};
 	}
 ]);
 
@@ -334,7 +340,7 @@ battleMind.controller('GameoverCtrl', ['$rootScope', '$scope', '$location', 'GAp
 				$scope.tabRep.push({question: $rootScope.questions[i].question, reponse: $rootScope.questions[i].propositions[$rootScope.questions[i].reponse]});
 			}
 			console.log($scope.tabRep);
-		}
+		};
 		
 		$scope.restart = function(){
 	
@@ -347,7 +353,7 @@ battleMind.controller('GameoverCtrl', ['$rootScope', '$scope', '$location', 'GAp
 			}
 	
 			$location.path('/game');
-		}
+		};
 	}
 ]);
 
