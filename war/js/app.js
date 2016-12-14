@@ -186,6 +186,7 @@ battleMind.controller('GameCtrl', ['$rootScope', '$scope', '$location', '$timeou
 			{
 				document.getElementById($scope.indiceQPreF).className = "btn btn-lg btn-default ng-binding";
 			}
+			document.getElementById("ButtonValidMap").className = "btn btn-lg btn-default ng-binding  pull-right";
 			
 			$scope.nbrQuestion++;
 			$scope.indiceQuestion++;
@@ -210,7 +211,7 @@ battleMind.controller('GameCtrl', ['$rootScope', '$scope', '$location', '$timeou
 		};
 		
 		$scope.checkAnswer = function(indiceQuestion, reponse){
-			if(indiceQuestion == reponse)
+			if((indiceQuestion == reponse) || (indiceQuestion == $rootScope.questions[$scope.nbrQuestion].propositions[reponse]))
 			{
 				$rootScope.infos.well_answered++;
 				$rootScope.infos.answered++;
@@ -218,7 +219,7 @@ battleMind.controller('GameCtrl', ['$rootScope', '$scope', '$location', '$timeou
 				
 				if($rootScope.questions[$scope.nbrQuestion].type == 2)
 				{
-					document.getElementById(ButtonValidMap).className = "btn btn-lg btn-success";
+					document.getElementById("ButtonValidMap").className = "btn btn-lg btn-success pull-right";
 				}
 				else
 				{
@@ -247,7 +248,7 @@ battleMind.controller('GameCtrl', ['$rootScope', '$scope', '$location', '$timeou
 				
 				if($rootScope.questions[$scope.nbrQuestion].type == 2)
 				{
-					document.getElementById(ButtonValidMap).className = "btn btn-lg btn-danger";
+					document.getElementById("ButtonValidMap").className = "btn btn-lg btn-danger pull-right";
 				}
 				else
 				{
