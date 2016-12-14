@@ -23,6 +23,26 @@ public class QuestionEntity {
 	@Persistent
 	int reponse;
 	
+	@Persistent
+	int type;
+	
+	public QuestionEntity(String id, String enonce, List<String> propositions, int reponse, int type) {
+		super();
+		this.id = id;
+		this.enonce = enonce;
+		this.propositions = propositions;
+		this.reponse = reponse;
+		this.type = type;
+	}
+	
+	public QuestionEntity(String enonce, List<String> propositions, int reponse, int type) {
+		super();
+		this.id = Integer.toString(this.hashCode());
+		this.enonce = enonce;
+		this.propositions = propositions;
+		this.reponse = reponse;
+		this.type = type;
+	}
 	
 	public String getId() {
 		return id;
@@ -54,5 +74,13 @@ public class QuestionEntity {
 	
 	public void setReponse(int reponse) {
 		this.reponse = reponse;
+	}
+	
+	public int getType(){
+		return this.type;
+	}
+	
+	public void setType(int type){
+		this.type = type;
 	}
 }
