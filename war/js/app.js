@@ -215,8 +215,17 @@ battleMind.controller('GameCtrl', ['$rootScope', '$scope', '$location', '$timeou
 				$rootScope.infos.well_answered++;
 				$rootScope.infos.answered++;
 				$rootScope.infos.highscores++;
-				$scope.indiceQPreT = indiceQuestion;
-				document.getElementById(indiceQuestion).className = "btn btn-lg btn-success";
+				
+				if($rootScope.questions[$scope.nbrQuestion].type == 2)
+				{
+					document.getElementById(ButtonValidMap).className = "btn btn-lg btn-success";
+				}
+				else
+				{
+					$scope.indiceQPreT = indiceQuestion;
+					document.getElementById(indiceQuestion).className = "btn btn-lg btn-success";
+				}
+				
 				if($scope.nbrQuestion < $rootScope.questions.length)
 				{
 					$timeout(function () {
@@ -235,10 +244,19 @@ battleMind.controller('GameCtrl', ['$rootScope', '$scope', '$location', '$timeou
 				$rootScope.infos.life--;
 				$rootScope.infos.nolife++;
 				$rootScope.infos.answered++;
-				$scope.indiceQPreT = reponse;
-				document.getElementById(reponse).className = "btn btn-lg btn-success";
-				$scope.indiceQPreF = indiceQuestion;
-				document.getElementById(indiceQuestion).className = "btn btn-lg btn-danger";
+				
+				if($rootScope.questions[$scope.nbrQuestion].type == 2)
+				{
+					document.getElementById(ButtonValidMap).className = "btn btn-lg btn-danger";
+				}
+				else
+				{
+					$scope.indiceQPreT = reponse;
+					document.getElementById(reponse).className = "btn btn-lg btn-success";
+					$scope.indiceQPreF = indiceQuestion;
+					document.getElementById(indiceQuestion).className = "btn btn-lg btn-danger";	
+				}
+				
 				if($rootScope.infos.life == 0 || ($scope.nbrQuestion == $rootScope.questions.length))
 				{
 					$timeout(function () {
@@ -254,15 +272,78 @@ battleMind.controller('GameCtrl', ['$rootScope', '$scope', '$location', '$timeou
 			}
 		};
 		
+		$scope.setMapPick = function(marker){
+			$scope.mapMarker = marker;
+			$scope.$apply();
+		};
+		
 		$scope.myMap = function(){
 			var mapCanvas = document.getElementById("map");
 			var mapOptions = {
-				center: new google.maps.LatLng(51.5, -0.2),
+				center: new google.maps.LatLng(47.2, -1.5),
+				streetViewControl: false,
+				disableDefaultUI: true,
 				zoom: 5
 			}
 			var map = new google.maps.Map(mapCanvas, mapOptions);
-			console.log(map);
-		};
+			
+			var infowindow = new google.maps.InfoWindow();
+			
+			function setMarker(map,infowindow, location, fn) {
+				var marker = new google.maps.Marker({
+					position: location,
+					map: map,
+					draggable: true
+					});
+					
+				var latLng = new google.maps.LatLng(marker.position.lat(),marker.position.lng());
+				infowindow.open(map,marker);
+				
+				geocoderLatLng(map,infowindow,latLng);
+
+				google.maps.event.addListener(marker,'dragend', function(event){
+					latLng = new google.maps.LatLng(marker.position.lat(),marker.position.lng());
+					geocoderLatLng(map,infowindow,latLng);
+					});
+			};
+			
+			function geocoderLatLng(map, infowindow,latLng) {
+				var geocoder = new google.maps.Geocoder;
+				geocoder.geocode({'location':latLng}, function(results, status){
+					if(status === google.maps.GeocoderStatus.OK) {
+						if (results[1]){
+						var i = 0;
+						while(results[1].address_components[i].types[0] != "country"){
+							i++;
+						}
+						var country = results[1].address_components[i].long_name;
+						infowindow.setContent(country);
+						$scope.countryAnswer = country;
+						$scope.setMapPick(country);
+						}
+						else
+						{
+						console.error('Pas de résultat trouvé');
+						infowindow.setContent("");
+						$scope.setMapPick(null);
+						}
+					}
+					else
+					{
+						console.error('Geocoder failed due to: ' + status);
+						infowindow.setContent("");
+						$scope.setMapPick(null);
+					}
+				});
+			};
+			
+			
+			
+			
+			google.maps.event.addListenerOnce(map, 'click', function(event){
+				setMarker(map, infowindow, event.latLng);
+				});
+			};
 		
 		//Gestion de la vie
 		$scope.getLife = function(count){
