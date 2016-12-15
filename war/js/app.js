@@ -211,7 +211,16 @@ battleMind.controller('GameCtrl', ['$rootScope', '$scope', '$location', '$timeou
 		};
 		
 		$scope.checkAnswer = function(indiceQuestion, reponse){
-			if((indiceQuestion == reponse) || (indiceQuestion == $rootScope.questions[$scope.nbrQuestion].propositions[reponse]))
+			
+			if($rootScope.questions[$scope.nbrQuestion].type == 2)
+			{
+				var string = $rootScope.questions[$scope.nbrQuestion].propositions[reponse];
+				var substring = indiceQuestion;
+				var stringFound = (string.indexOf(substring) !== -1);
+				console.log(stringFound);
+			}
+			
+			if((indiceQuestion == reponse) || (stringFound == true))
 			{
 				$rootScope.infos.well_answered++;
 				$rootScope.infos.answered++;
@@ -220,6 +229,7 @@ battleMind.controller('GameCtrl', ['$rootScope', '$scope', '$location', '$timeou
 				if($rootScope.questions[$scope.nbrQuestion].type == 2)
 				{
 					document.getElementById("ButtonValidMap").className = "btn btn-lg btn-success pull-right";
+					document.getElementById("map").innerHTML = "";
 				}
 				else
 				{
@@ -249,6 +259,7 @@ battleMind.controller('GameCtrl', ['$rootScope', '$scope', '$location', '$timeou
 				if($rootScope.questions[$scope.nbrQuestion].type == 2)
 				{
 					document.getElementById("ButtonValidMap").className = "btn btn-lg btn-danger pull-right";
+					document.getElementById("map").innerHTML = "";
 				}
 				else
 				{
