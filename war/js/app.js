@@ -114,16 +114,39 @@ battleMind.controller('AdminCtrl', ['$rootScope', '$scope', '$location', 'GApi',
 		}
 		
 		$scope.checkLoad = 0;
-		GApi.execute('questionentityendpoint', 'addQuestions').then(function(resp)
+		GApi.execute('questionentityendpoint', 'addWhoQuestions').then(function(resp)
 			{
-				$scope.checkLoad = 1;
-				console.log("Chargement des questions fait");
+				console.log("Chargement des questions who fait");
+				
+				GApi.execute('questionentityendpoint', 'addWhenQuestions').then(function(resp)
+				{
+					console.log("Chargement des questions fait");
+					
+					GApi.execute('questionentityendpoint', 'addWhereQuestions').then(function(resp)
+					{
+						$scope.checkLoad = 1;
+						console.log("Chargement des questions where fait");
+						
+					},function() 
+					{
+						$scope.checkLoad = -1;
+						console.log('Erreur de chargement des questions where');
+					});
+					
+				},function() 
+				{
+					$scope.checkLoad = -1;
+					console.log('Erreur de chargement des questions when');
+				});
 				
 			},function() 
 			{
 				$scope.checkLoad = -1;
-				console.log('Erreur de chargement des questions');
+				console.log('Erreur de chargement des questions who');
 			});
+		
+		
+		
 		console.log("Fin de chargement");
 		
 		$scope.restart = function(){
@@ -170,7 +193,14 @@ battleMind.controller('GameCtrl', ['$rootScope', '$scope', '$location', '$timeou
 			{
 				console.log("Chargement des questions");
 				$rootScope.questions = resp.items;
-				$scope.nextQuestion();
+				if(typeof $rootScope.questions == 'undefined')
+				{
+					$location.path('/admin');
+				}
+				else
+				{
+					$scope.nextQuestion();
+				}
 				
 			},function() 
 			{
