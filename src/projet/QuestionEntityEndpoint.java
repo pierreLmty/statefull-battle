@@ -1,19 +1,5 @@
 package projet;
 
-import projet.PMF;
-
-import com.google.api.server.spi.config.Api;
-import com.google.api.server.spi.config.ApiMethod;
-import com.google.api.server.spi.config.ApiNamespace;
-import com.google.api.server.spi.response.CollectionResponse;
-import com.google.appengine.api.datastore.Cursor;
-import com.google.appengine.datanucleus.query.JDOCursorHelper;
-import com.hp.hpl.jena.query.QueryExecution;
-import com.hp.hpl.jena.query.QueryExecutionFactory;
-import com.hp.hpl.jena.query.QuerySolution;
-import com.hp.hpl.jena.query.ResultSet;
-
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -21,10 +7,19 @@ import java.util.Random;
 
 import javax.annotation.Nullable;
 import javax.inject.Named;
-import javax.persistence.EntityExistsException;
-import javax.persistence.EntityNotFoundException;
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
+import javax.persistence.EntityExistsException;
+import javax.persistence.EntityNotFoundException;
+
+import com.google.api.server.spi.config.Api;
+import com.google.api.server.spi.config.ApiMethod;
+import com.google.api.server.spi.config.ApiNamespace;
+import com.google.api.server.spi.response.CollectionResponse;
+import com.google.appengine.api.datastore.Cursor;
+import com.google.appengine.datanucleus.query.JDOCursorHelper;
+import com.hp.hpl.jena.query.QuerySolution;
+import com.hp.hpl.jena.query.ResultSet;
 
 @Api(name = "questionentityendpoint", namespace = @ApiNamespace(ownerDomain = "mycompany.com", ownerName = "mycompany.com", packagePath = "services"))
 public class QuestionEntityEndpoint {
@@ -77,6 +72,90 @@ public class QuestionEntityEndpoint {
 				.setNextPageToken(cursorString).build();
 	}
 	
+	//question combattant
+	@ApiMethod(name = "addWhoQuestions")
+	public void addWhoQuestions(@Nullable @Named("uri") String uri){
+		List<QuestionEntity> questionCombattantList = new LinkedList<QuestionEntity>();
+	
+		ResultSet results = QuestionUtil.execQuery();
+		QuerySolution qs;
+		
+		List<String> combattantList = new LinkedList<String>();
+		Random rdm = new Random();
+		for (; results.hasNext();) {
+			qs = results.next();
+			
+			combattantList.add(qs.get("combatant").toString());
+			
+			questionCombattantList.add(QuestionUtil.preGenerateQuestion("Who took part in "+ qs.get("label") +" ? ",qs.get("combatant").toString(),rdm,1));
+		}
+		QuestionEntityEndpoint q = new QuestionEntityEndpoint();
+		
+		for (QuestionEntity elt:questionCombattantList){
+			try{
+				q.insertQuestionEntity(QuestionUtil.completeQuestion(elt,combattantList,rdm));
+			}catch(EntityExistsException e){
+				
+			}
+		}
+	}
+	
+	//question nameplace
+	@ApiMethod(name = "addWhereQuestions")
+	public void addWhereQuestions(@Nullable @Named("uri") String uri){
+		List<QuestionEntity> questionNamePlaceList = new LinkedList<QuestionEntity>();
+	
+		ResultSet results = QuestionUtil.execQuery();
+		QuerySolution qs;
+		
+		List<String> namePlaceList = new LinkedList<String>();
+		Random rdm = new Random();
+		for (; results.hasNext();) {
+			qs = results.next();
+			
+			namePlaceList.add(QuestionUtil.getValue(qs.get("namePlace").toString()));
+			
+			questionNamePlaceList.add(QuestionUtil.preGenerateQuestion("Where take place "+ qs.get("label") +" ? ",QuestionUtil.getValue(qs.get("namePlace").toString()),rdm,2));
+		}
+		QuestionEntityEndpoint q = new QuestionEntityEndpoint();
+		
+		for (QuestionEntity elt:questionNamePlaceList){
+			try{
+				q.insertQuestionEntity(QuestionUtil.completeQuestion(elt,namePlaceList,rdm));
+			}catch(EntityExistsException e){
+				
+			}
+		}
+	}
+	
+	//question date
+	@ApiMethod(name = "addWhenQuestions")
+	public void addWhenQuestions(@Nullable @Named("uri") String uri){
+		List<QuestionEntity> questionDateList = new LinkedList<QuestionEntity>();
+	
+		ResultSet results = QuestionUtil.execQuery();
+		QuerySolution qs;
+		
+		List<String> dateList = new LinkedList<String>();
+		Random rdm = new Random();
+		for (; results.hasNext();) {
+			qs = results.next();
+			
+			dateList.add(qs.get("date").toString());
+			
+			questionDateList.add(QuestionUtil.preGenerateQuestion("When occurred "+ qs.get("label") +" ? ",qs.get("date").toString(),rdm,3));
+		}
+		QuestionEntityEndpoint q = new QuestionEntityEndpoint();
+		
+		for (QuestionEntity elt:questionDateList){
+			try{
+				q.insertQuestionEntity(QuestionUtil.completeQuestion(elt,dateList,rdm));
+			}catch(EntityExistsException e){
+				
+			}
+		}
+	}
+	
 	@ApiMethod(name = "addQuestions")
 	public void addQuestions(@Nullable @Named("uri") String uri)
 	{
@@ -84,7 +163,7 @@ public class QuestionEntityEndpoint {
 		List<QuestionEntity> questionNamePlaceList = new LinkedList<QuestionEntity>();
 		List<QuestionEntity> questionDateList = new LinkedList<QuestionEntity>();
 	
-		ResultSet results = execQuery();
+		ResultSet results = QuestionUtil.execQuery();
 		QuerySolution qs;
 		
 		List<String> combattantList = new LinkedList<String>();
@@ -98,15 +177,15 @@ public class QuestionEntityEndpoint {
 			namePlaceList.add(qs.get("namePlace").toString());
 			dateList.add(qs.get("date").toString());
 			
-			questionCombattantList.add(preGenerateQuestion("Who took part in "+ qs.get("label") +" ? ",qs.get("combatant").toString(),rdm,1));
-			questionNamePlaceList.add(preGenerateQuestion("Where took part in "+ qs.get("label") +" ? ",qs.get("namePlace").toString(),rdm,2));
-			questionDateList.add(preGenerateQuestion("When took part in "+ qs.get("label") +" ? ",qs.get("date").toString(),rdm,3));
+			questionCombattantList.add(QuestionUtil.preGenerateQuestion("Who took part in "+ qs.get("label") +" ? ",qs.get("combatant").toString(),rdm,1));
+			questionNamePlaceList.add(QuestionUtil.preGenerateQuestion("Where took part in "+ qs.get("label") +" ? ",qs.get("namePlace").toString(),rdm,2));
+			questionDateList.add(QuestionUtil.preGenerateQuestion("When took part in "+ qs.get("label") +" ? ",qs.get("date").toString(),rdm,3));
 		}
 		QuestionEntityEndpoint q = new QuestionEntityEndpoint();
 		
 		for (QuestionEntity elt:questionCombattantList){
 			try{
-				q.insertQuestionEntity(completeQuestion(elt,combattantList,rdm));
+				q.insertQuestionEntity(QuestionUtil.completeQuestion(elt,combattantList,rdm));
 			}catch(EntityExistsException e){
 				
 			}
@@ -114,7 +193,7 @@ public class QuestionEntityEndpoint {
 		
 		for (QuestionEntity elt:questionNamePlaceList){
 			try{
-				q.insertQuestionEntity(completeQuestion(elt,namePlaceList,rdm));
+				q.insertQuestionEntity(QuestionUtil.completeQuestion(elt,namePlaceList,rdm));
 			}catch(EntityExistsException e){
 				
 			}
@@ -123,80 +202,13 @@ public class QuestionEntityEndpoint {
 		
 		for (QuestionEntity elt:questionDateList){
 			try{
-				q.insertQuestionEntity(completeQuestion(elt,dateList,rdm));
+				q.insertQuestionEntity(QuestionUtil.completeQuestion(elt,dateList,rdm));
 			}catch(EntityExistsException e){
 				
 			}
 		}
-		
 	}
 
-	private QuestionEntity preGenerateQuestion(String enonce, String propositionsCorrecte, Random rdm, int type){
-		List<String> propositions = new ArrayList<String>(4);
-		propositions.add("");
-		propositions.add("");
-		propositions.add("");
-		propositions.add("");
-		
-		int indiceReponse;
-		indiceReponse = rdm.nextInt(4);
-		propositions.set(indiceReponse, propositionsCorrecte);
-		
-		return new QuestionEntity(enonce, propositions, indiceReponse, type);
-	}
-	
-	private QuestionEntity completeQuestion(QuestionEntity q, List<String> listeFausseRep,Random rdm){
-		int indiceReponse = q.getReponse();
-		int maxRand = listeFausseRep.size();
-		int i=0;
-		String s;
-		while(i<4)
-		{
-			s = listeFausseRep.get(rdm.nextInt(maxRand));
-			if(i!=indiceReponse){
-				if(!q.getPropositions().contains(s))
-				{
-					q.getPropositions().set(i,s);
-					++i;
-				}
-			}
-			else ++i;
-		}
-		return q;
-	}
-
-	
-	private ResultSet execQuery(String uri){
-		String request = "prefix dbo: <http://dbpedia.org/ontology/>\n" +
-				"prefix dbp: <http://dbpedia.org/property/>\n" +
-				"prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n" +
-				"prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n" +
-	
-				"SELECT distinct (str(?label1) as ?label) (str(?namePlace1) as ?namePlace) (str(?combatant1) as ?combatant) (str(?date1) as ?date)\n" +
-				"WHERE {\n" +
-						"?conflit rdf:type dbo:MilitaryConflict .\n" +
-						"?conflit dbo:place ?place.\n" +
-						"?place dbp:commonName ?namePlace1.\n" +
-						"?conflit rdfs:label ?label1.\n" +
-						"?conflit dbo:combatant ?combatant1.\n" +
-						"?conflit dbo:date ?date1\n" +
-				"FILTER regex(?combatant1, \"^[a-z]|^[A-Z]\")\n" +
-				"FILTER (!regex(?combatant1, \":\"))\n" +
-				"FILTER (lang(?label1)='en')\n" +
-				"FILTER (lang(?namePlace1)='en')\n" +
-				"} LIMIT 100";
-		
-		QueryExecution qexec = QueryExecutionFactory.sparqlService(uri, request);
-		qexec.setTimeout(60000);
-		ResultSet res = qexec.execSelect();
-		qexec.close();
-		return res;
-	}
-	
-	private ResultSet execQuery(){
-		return execQuery("http://dbpedia.org/sparql/");
-	}
-	
 	/**
 	 * This method gets the entity having primary key id. It uses HTTP GET method.
 	 *
